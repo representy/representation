@@ -1,0 +1,49 @@
+{
+  "name": "representation",
+  "version": "1.0.0",
+  "repository": "git@github.com:salimkayabasi/representation.git",
+  "author": "Salim KAYABAŞI <salim.kayabasi@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "major": "npm version major -m \"New major version %s\"",
+    "minor": "npm version minor -m \"New minor version %s\"",
+    "patch": "npm version patch -m \"New patch version %s\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "pretest": "yarn run lint",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "babel-preset-env": "^1.4.0",
+    "babel-preset-stage-2": "^6.24.1",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^5.0.1",
+    "eslint-plugin-react": "^7.0.1",
+    "jest": "^20.0.1"
+  },
+  "jest": {
+    "testMatch": [
+      "**/(__tests__|tests|test)/**/*.test.js?(x)"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.{js,jsx}",
+      "!**/node_modules/**",
+      "!**/coverage/**",
+      "!**/build/**",
+      "!**/config/**",
+      "!**/test/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "functions": 0,
+        "lines": 0,
+        "statements": 0
+      }
+    }
+  }
+}
