@@ -10,11 +10,7 @@ describe('Representation', () => {
     representation = new Representation();
   });
 
-  test('2+2=4', () => {
-    expect(2 + 2).toEqual(4);
-  });
-
-  test('build', async () => {
+  test('generate', async () => {
     const github = new Github(
       {
         user: 'salimkayabasi',
@@ -22,7 +18,9 @@ describe('Representation', () => {
       },
       request,
     );
-    const result = await representation.addSource(github).load();
+    const result = await representation
+      .addSource(github)
+      .generate('../dist/a.json');
     expect(result).not.toBeNull();
   });
 });
