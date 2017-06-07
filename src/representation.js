@@ -12,7 +12,7 @@ class Representation {
   }
 
   static write(data, file) {
-    const filePath = path.join(__dirname, file);
+    const filePath = path.join(process.cwd(), file);
     logger.debug('File created at', filePath);
     mkdirp(path.dirname(filePath), (err) => {
       if (err) {

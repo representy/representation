@@ -20,7 +20,7 @@ describe('Representation', () => {
     );
     const result = await representation
       .addSource(github)
-      .generate('../dist/a.json');
+      .generate('/dist/a.json');
     expect(result).not.toBeNull();
   });
 });
