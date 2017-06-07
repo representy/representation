@@ -37,10 +37,11 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 const logger = (0, _logWith2.default)(module);
 
 class Representation {
-  constructor(folder, fileName = 'me.json') {
+  constructor(folder, config, fileName = 'me.json') {
     this.sources = [];
     this.fileName = fileName;
     this.folder = folder;
+    this.config = config;
   }
 
   write(data) {
@@ -93,7 +94,7 @@ class Representation {
 
     return _asyncToGenerator(function* () {
       const promise = new Promise(function (resolve, reject) {
-        return ghpages.publish(_this3.folder, function (err) {
+        return ghpages.publish(_this3.folder, _this3.config.publish, function (err) {
           if (err) {
             reject(err);
             return;
