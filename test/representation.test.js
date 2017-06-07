@@ -7,7 +7,7 @@ const token = process.env.GITHUB_TOKEN;
 describe('Representation', () => {
   let representation;
   beforeEach(() => {
-    representation = new Representation();
+    representation = new Representation('build');
   });
 
   test('generate', async () => {
@@ -20,7 +20,7 @@ describe('Representation', () => {
     );
     const result = await representation
       .addSource(github)
-      .generate('/dist/a.json');
+      .generate();
     expect(result).not.toBeNull();
   });
 });
