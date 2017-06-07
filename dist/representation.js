@@ -8,6 +8,10 @@ var _fs = require('fs');
 
 var fs = _interopRequireWildcard(_fs);
 
+var _ghPages = require('gh-pages');
+
+var ghpages = _interopRequireWildcard(_ghPages);
+
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -33,19 +37,18 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 const logger = (0, _logWith2.default)(module);
 
 class Representation {
-  constructor() {
+  constructor(folder, fileName = 'me.json') {
     this.sources = [];
+    this.fileName = fileName;
+    this.folder = folder;
   }
 
-  static write(data, file) {
-    const filePath = path.join(process.cwd(), file);
+  write(data) {
+    const filePath = path.join(process.cwd(), this.folder, this.fileName);
     logger.debug('File created at', filePath);
-    (0, _mkdirp2.default)(path.dirname(filePath), err => {
-      if (err) {
-        throw err;
-      }
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 4));
-    });
+    _mkdirp2.default.sync(path.dirname(filePath));
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 4));
+    return this;
   }
 
   addSource(source) {
@@ -53,7 +56,7 @@ class Representation {
     return this;
   }
 
-  load() {
+  build() {
     var _this = this;
 
     return _asyncToGenerator(function* () {
@@ -75,23 +78,31 @@ class Representation {
     })();
   }
 
-  build() {
+  generate() {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
-      yield _this2.load();
+      yield _this2.build();
+      _this2.write(_this2.payload || {});
       return _this2;
     })();
   }
 
-  generate(file) {
+  publish() {
     var _this3 = this;
 
     return _asyncToGenerator(function* () {
-      yield _this3.build();
-      const result = _this3.payload || {};
-      Representation.write(result, file);
-      return result;
+      const promise = new Promise(function (resolve, reject) {
+        return ghpages.publish(_this3.folder, function (err) {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        });
+      });
+      yield promise;
+      return _this3;
     })();
   }
 }
