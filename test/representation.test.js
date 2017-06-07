@@ -7,7 +7,9 @@ const token = process.env.GITHUB_TOKEN;
 describe('Representation', () => {
   let representation;
   beforeEach(() => {
-    representation = new Representation('build');
+    representation = new Representation({
+      folder: 'build',
+    });
   });
 
   test('generate', async () => {
