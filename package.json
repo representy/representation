@@ -1,9 +1,10 @@
 {
   "name": "representation",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": "git@github.com:salimkayabasi/representation.git",
   "author": "Salim KAYABAŞI <salim.kayabasi@gmail.com>",
   "license": "MIT",
+  "main": "dist/index.js",
   "scripts": {
     "major": "npm version major -m \"New major version %s\"",
     "minor": "npm version minor -m \"New minor version %s\"",
@@ -11,9 +12,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "pretest": "yarn run lint",
-    "test": "jest"
+    "test": "jest",
+    "build": "babel src/ -d dist/",
+    "preversion": "yarn build && git commit -a --allow-empty -m 'update dist'"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-preset-env": "^1.4.0",
     "babel-preset-stage-2": "^6.24.1",
