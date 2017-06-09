@@ -8,10 +8,17 @@ import * as path from 'path';
 const logger = logWith(module);
 
 class Representation {
-  constructor(folder, fileName = 'me.json') {
+  constructor(config) {
     this.sources = [];
-    this.fileName = fileName;
-    this.folder = folder;
+    let opts = config;
+    if (_.isString(config)) {
+      opts = {
+        folder: config,
+      };
+    }
+    this.fileName = opts.fileName || 'me.json';
+    this.folder = opts.folder;
+    this.config = opts;
   }
 
   write(data) {
@@ -47,13 +54,15 @@ class Representation {
 
   async publish() {
     const promise = new Promise(
-      (resolve, reject) => ghpages.publish(this.folder, (err) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve();
-      }));
+      (resolve, reject) => ghpages.publish(this.folder,
+        this.config.publish || {},
+        (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        }));
     await promise;
     return this;
   }
