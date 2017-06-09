@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as ghpages from 'gh-pages';
 import _ from 'lodash';
 import logWith from 'log-with';
 import mkdirp from 'mkdirp';
@@ -9,63 +8,36 @@ const logger = logWith(module);
 
 class Representation {
   constructor(config) {
-    this.sources = [];
-    let opts = config;
-    if (_.isString(config)) {
-      opts = {
-        folder: config,
-      };
-    }
-    this.fileName = opts.fileName || 'me.json';
-    this.folder = opts.folder;
-    this.config = opts;
+    this.options = _.extend(Representation.getOptions(), config);
+  }
+
+  static getOptions() {
+    return {
+      folder: 'build',
+      file: 'me.json',
+    };
   }
 
   write(data) {
-    const filePath = path.join(process.cwd(), this.folder, this.fileName);
+    const { folder, file } = this.options;
+    const filePath = path.join(process.cwd(), folder, file);
     logger.debug('File created at', filePath);
     mkdirp.sync(path.dirname(filePath));
     fs.writeFileSync(filePath, JSON.stringify(data, null, 4));
-    return this;
-  }
-
-  addSource(source) {
-    this.sources.push(source);
-    return this;
   }
 
   async build() {
-    const sources = _.map(this.sources, async (source) => {
-      try {
+    const sources = _.chain(this.options.sources)
+      .map(async (option, sourceName) => {
+        const { Source } = await import(`representation-source-${sourceName}`);
+        const source = new Source(option);
         return source.load();
-      } catch (e) {
-        return null;
-      }
-    });
-    this.payload = _.compact(await Promise.all(sources));
-    return this;
+      })
+      .value();
+    const payload = _.compact(await Promise.all(sources));
+    this.write(payload);
   }
 
-  async generate() {
-    await this.build();
-    this.write(this.payload || {});
-    return this;
-  }
-
-  async publish() {
-    const promise = new Promise(
-      (resolve, reject) => ghpages.publish(this.folder,
-        this.config.publish || {},
-        (err) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve();
-        }));
-    await promise;
-    return this;
-  }
 }
 
 export default Representation;
