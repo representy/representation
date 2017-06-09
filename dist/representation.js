@@ -8,10 +8,6 @@ var _fs = require('fs');
 
 var fs = _interopRequireWildcard(_fs);
 
-var _ghPages = require('gh-pages');
-
-var ghpages = _interopRequireWildcard(_ghPages);
-
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -38,80 +34,44 @@ const logger = (0, _logWith2.default)(module);
 
 class Representation {
   constructor(config) {
-    this.sources = [];
-    let opts = config;
-    if (_lodash2.default.isString(config)) {
-      opts = {
-        folder: config
-      };
-    }
-    this.fileName = opts.fileName || 'me.json';
-    this.folder = opts.folder;
-    this.config = opts;
+    this.options = _lodash2.default.extend(Representation.getOptions(), config);
+  }
+
+  static getOptions() {
+    return {
+      folder: 'build',
+      file: 'me.json'
+    };
   }
 
   write(data) {
-    const filePath = path.join(process.cwd(), this.folder, this.fileName);
+    const { folder, file } = this.options;
+    const filePath = path.join(process.cwd(), folder, file);
     logger.debug('File created at', filePath);
     _mkdirp2.default.sync(path.dirname(filePath));
     fs.writeFileSync(filePath, JSON.stringify(data, null, 4));
-    return this;
-  }
-
-  addSource(source) {
-    this.sources.push(source);
-    return this;
   }
 
   build() {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      const sources = _lodash2.default.map(_this.sources, (() => {
-        var _ref = _asyncToGenerator(function* (source) {
-          try {
-            return source.load();
-          } catch (e) {
-            return null;
-          }
+      const sources = _lodash2.default.chain(_this.options.sources).map((() => {
+        var _ref = _asyncToGenerator(function* (option, sourceName) {
+          const { Source } = yield Promise.resolve().then(() => require(`representation-source-${sourceName}`));
+          const source = new Source(option);
+          return source.load();
         });
 
-        return function (_x) {
+        return function (_x, _x2) {
           return _ref.apply(this, arguments);
         };
-      })());
-      _this.payload = _lodash2.default.compact((yield Promise.all(sources)));
-      return _this;
+      })()).value();
+      const payload = _lodash2.default.compact((yield Promise.all(sources)));
+      _this.write(payload);
     })();
   }
 
-  generate() {
-    var _this2 = this;
-
-    return _asyncToGenerator(function* () {
-      yield _this2.build();
-      _this2.write(_this2.payload || {});
-      return _this2;
-    })();
-  }
-
-  publish() {
-    var _this3 = this;
-
-    return _asyncToGenerator(function* () {
-      const promise = new Promise(function (resolve, reject) {
-        return ghpages.publish(_this3.folder, _this3.config.publish || {}, function (err) {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve();
-        });
-      });
-      yield promise;
-      return _this3;
-    })();
-  }
 }
 
 exports.default = Representation;
