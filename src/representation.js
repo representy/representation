@@ -67,8 +67,8 @@ class Representation {
       profile: options.profile,
       sources: _.compact(await Promise.all(sources)),
     };
-    if (!this.options.json) {
-      this.write(JSON.stringify(payload, null, 4));
+    if (this.options.json) {
+      this.write(JSON.stringify(payload, null, 4), this.options.file);
     }
     const html = await this.render(payload);
     if (!_.isEmpty(html)) {
