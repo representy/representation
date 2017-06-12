@@ -106,8 +106,8 @@ class Representation {
         profile: options.profile,
         sources: _lodash2.default.compact((yield Promise.all(sources)))
       };
-      if (!_this2.options.json) {
-        _this2.write(JSON.stringify(payload, null, 4));
+      if (_this2.options.json) {
+        _this2.write(JSON.stringify(payload, null, 4), _this2.options.file);
       }
       const html = yield _this2.render(payload);
       if (!_lodash2.default.isEmpty(html)) {
