@@ -24,6 +24,10 @@ var _path = require('path');
 
 var path = _interopRequireWildcard(_path);
 
+var _representationToolRenderer = require('representation-tool-renderer');
+
+var _representationToolRenderer2 = _interopRequireDefault(_representationToolRenderer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -44,31 +48,71 @@ class Representation {
     };
   }
 
-  write(data) {
-    const { folder, file } = this.options;
+  write(data, file) {
+    const { folder } = this.options;
     const filePath = path.join(process.cwd(), folder, file);
     logger.debug('File created at', filePath);
     _mkdirp2.default.sync(path.dirname(filePath));
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 4));
+    fs.writeFileSync(filePath, data);
   }
 
-  build() {
+  render(payload) {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      const sources = _lodash2.default.chain(_this.options.sources).map((() => {
+      const {
+        template
+      } = _this.options;
+
+      if (_lodash2.default.isString(template)) {
+        const templateModule = `representation-template-${template}`;
+        try {
+          const { Template } = yield Promise.resolve().then(() => require(`${templateModule}`));
+          return Template.render(payload);
+        } catch (e) {
+          logger.error('Module not found', templateModule);
+        }
+        return null;
+      }
+
+      return _representationToolRenderer2.default.render(payload, template);
+    })();
+  }
+
+  build() {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      const { options } = _this2;
+      const sources = _lodash2.default.chain(options.sources).map((() => {
         var _ref = _asyncToGenerator(function* (option, sourceName) {
-          const { Source } = yield Promise.resolve().then(() => require(`representation-source-${sourceName}`));
-          const source = new Source(option);
-          return source.load();
+          const sourceModule = `representation-source-${sourceName}`;
+          try {
+            const { Source } = yield Promise.resolve().then(() => require(`${sourceModule}`));
+            const source = new Source(option);
+            return source.load();
+          } catch (e) {
+            logger.error('Module not found', sourceModule);
+            return null;
+          }
         });
 
         return function (_x, _x2) {
           return _ref.apply(this, arguments);
         };
-      })()).value();
-      const payload = _lodash2.default.compact((yield Promise.all(sources)));
-      _this.write(payload);
+      })()).compact().value();
+      const payload = {
+        updatedAt: new Date(),
+        profile: options.profile,
+        sources: _lodash2.default.compact((yield Promise.all(sources)))
+      };
+      if (!_this2.options.json) {
+        _this2.write(JSON.stringify(payload, null, 4));
+      }
+      const html = yield _this2.render(payload);
+      if (!_lodash2.default.isEmpty(html)) {
+        _this2.write(html, 'index.html');
+      }
     })();
   }
 
