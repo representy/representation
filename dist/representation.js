@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -47,7 +49,7 @@ class Representation {
     return {
       folder: 'build',
       file: 'me.json',
-      index: 'index.html'
+      home: 'index.html'
     };
   }
 
@@ -55,8 +57,11 @@ class Representation {
     _rimraf2.default.sync(folder);
   }
 
-  write(data, file) {
-    const { folder } = this.config;
+  static removeTokens(sources) {
+    return _lodash2.default.mapValues(sources, source => _lodash2.default.omit(source, 'options.token'));
+  }
+
+  static write(folder, data, file) {
     const filePath = _path2.default.join(process.cwd(), folder, file);
     logger.debug('File created at', filePath);
     _mkdirp2.default.sync(_path2.default.dirname(filePath));
@@ -121,7 +126,9 @@ class Representation {
           const sourceModule = `representation-source-${source.type}`;
           try {
             const { Source } = yield Promise.resolve().then(() => require(`${sourceModule}`));
-            const fetcher = new Source(source.options);
+            const fetcher = new Source(_extends({}, source.options, {
+              token: source.options.token || _lodash2.default.get(config.token, source.type)
+            }));
             return fetcher.load();
           } catch (e) {
             logger.error(e.message, e.code);
@@ -136,18 +143,20 @@ class Representation {
 
       const payload = {
         updatedAt: new Date(),
-        sources
+        sources: Representation.removeTokens(sources)
       };
 
-      if (_this2.config.clean) {
-        Representation.clean(_this2.config.folder);
+      const { folder, file, clean, json, home } = _this2.config;
+
+      if (clean) {
+        Representation.clean(folder);
       }
-      if (_this2.config.json) {
-        _this2.write(JSON.stringify(payload, null, 4), _this2.config.file);
+      if (json) {
+        Representation.write(folder, JSON.stringify(payload, null, 4), file);
       }
       const html = yield _this2.render(payload);
       if (!_lodash2.default.isEmpty(html)) {
-        _this2.write(html, _this2.config.index);
+        Representation.write(folder, html, home);
       }
     })();
   }

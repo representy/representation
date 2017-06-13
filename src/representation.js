@@ -17,7 +17,7 @@ class Representation {
     return {
       folder: 'build',
       file: 'me.json',
-      index: 'index.html',
+      home: 'index.html',
     };
   }
 
@@ -25,8 +25,11 @@ class Representation {
     rimraf.sync(folder);
   }
 
-  write(data, file) {
-    const { folder } = this.config;
+  static removeTokens(sources) {
+    return _.mapValues(sources, source => _.omit(source, 'options.token'));
+  }
+
+  static write(folder, data, file) {
     const filePath = path.join(process.cwd(), folder, file);
     logger.debug('File created at', filePath);
     mkdirp.sync(path.dirname(filePath));
@@ -79,7 +82,10 @@ class Representation {
         const sourceModule = `representation-source-${source.type}`;
         try {
           const { Source } = await import(sourceModule);
-          const fetcher = new Source(source.options);
+          const fetcher = new Source({
+            ...source.options,
+            token: source.options.token || _.get(config.token, source.type),
+          });
           return fetcher.load();
         } catch (e) {
           logger.error(e.message, e.code);
@@ -89,18 +95,20 @@ class Representation {
 
     const payload = {
       updatedAt: new Date(),
-      sources,
+      sources: Representation.removeTokens(sources),
     };
 
-    if (this.config.clean) {
-      Representation.clean(this.config.folder);
+    const { folder, file, clean, json, home } = this.config;
+
+    if (clean) {
+      Representation.clean(folder);
     }
-    if (this.config.json) {
-      this.write(JSON.stringify(payload, null, 4), this.config.file);
+    if (json) {
+      Representation.write(folder, JSON.stringify(payload, null, 4), file);
     }
     const html = await this.render(payload);
     if (!_.isEmpty(html)) {
-      this.write(html, this.config.index);
+      Representation.write(folder, html, home);
     }
   }
 
