@@ -3,14 +3,14 @@ import _ from 'lodash';
 import logWith from 'log-with';
 import mkdirp from 'mkdirp';
 import path from 'path';
-import Renderer from 'representation-tool-renderer';
+import Renderer from 'representy-tool-renderer';
 import rimraf from 'rimraf';
 
 const logger = logWith(module);
 
-class Representation {
+class Representy {
   constructor(config) {
-    this.config = _.extend(Representation.getOptions(), config);
+    this.config = _.extend(Representy.getOptions(), config);
   }
 
   static getOptions() {
@@ -71,7 +71,7 @@ class Representation {
   async build() {
     const { config } = this;
     const { template } = config;
-    const sources = await Representation.mapValues(template.sources,
+    const sources = await Representy.mapValues(template.sources,
       async (source) => {
         if (_.isEmpty(source.type)) {
           return null;
@@ -95,23 +95,23 @@ class Representation {
 
     const payload = {
       updatedAt: new Date(),
-      sources: Representation.removeTokens(sources),
+      sources: Representy.removeTokens(sources),
     };
 
     const { folder, file, clean, json, home } = this.config;
 
     if (clean) {
-      Representation.clean(folder);
+      Representy.clean(folder);
     }
     if (json) {
-      Representation.write(folder, JSON.stringify(payload, null, 4), file);
+      Representy.write(folder, JSON.stringify(payload, null, 4), file);
     }
     const html = await this.render(payload);
     if (!_.isEmpty(html)) {
-      Representation.write(folder, html, home);
+      Representy.write(folder, html, home);
     }
   }
 
 }
 
-export default Representation;
+export default Representy;
