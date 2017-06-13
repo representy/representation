@@ -1,11 +1,11 @@
-import Representation from '../src/representation';
+import Representy from '../src/representy';
 
 const GH_TOKEN = process.env.GH_TOKEN;
 const LNKDN_TOKEN = process.env.LNKDN_TOKEN;
 
-describe('Representation', () => {
+describe('Representy', () => {
   test('generate', async () => {
-    const representation = new Representation({
+    const representy = new Representy({
       json: true,
       clean: true,
       folder: 'build',
@@ -75,6 +75,6 @@ describe('Representation', () => {
         },
       },
     });
-    await representation.build();
+    await representy.build();
   });
 });
