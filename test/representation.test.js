@@ -10,6 +10,9 @@ describe('Representation', () => {
       clean: true,
       folder: 'build',
       file: 'me.json',
+      tokens: {
+        github: GH_TOKEN,
+      },
       template: {
         options: {
           backgroundColor: 'red',
@@ -60,7 +63,6 @@ describe('Representation', () => {
             type: 'github',
             options: {
               user: 'google',
-              token: GH_TOKEN,
             },
           },
           linkedin: {
