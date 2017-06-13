@@ -53,9 +53,10 @@
     }
   },
   "dependencies": {
-    "representation-tool-renderer": "^0.0.2",
     "lodash": "^4.17.4",
     "log-with": "^1.2.1",
-    "mkdirp": "^0.5.1"
+    "mkdirp": "^0.5.1",
+    "representation-tool-renderer": "^0.0.2",
+    "rimraf": "^2.6.1"
   }
 }
