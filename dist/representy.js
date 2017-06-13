@@ -26,9 +26,9 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var _representationToolRenderer = require('representation-tool-renderer');
+var _representyToolRenderer = require('representy-tool-renderer');
 
-var _representationToolRenderer2 = _interopRequireDefault(_representationToolRenderer);
+var _representyToolRenderer2 = _interopRequireDefault(_representyToolRenderer);
 
 var _rimraf = require('rimraf');
 
@@ -40,9 +40,9 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const logger = (0, _logWith2.default)(module);
 
-class Representation {
+class Representy {
   constructor(config) {
-    this.config = _lodash2.default.extend(Representation.getOptions(), config);
+    this.config = _lodash2.default.extend(Representy.getOptions(), config);
   }
 
   static getOptions() {
@@ -88,7 +88,7 @@ class Representation {
 
       const file = template.file;
       if (!_lodash2.default.isEmpty(file)) {
-        return _representationToolRenderer2.default.render(payload, _lodash2.default.pick(template, 'file', 'engine'));
+        return _representyToolRenderer2.default.render(payload, _lodash2.default.pick(template, 'file', 'engine'));
       }
       return null;
     })();
@@ -115,7 +115,7 @@ class Representation {
     return _asyncToGenerator(function* () {
       const { config } = _this2;
       const { template } = config;
-      const sources = yield Representation.mapValues(template.sources, (() => {
+      const sources = yield Representy.mapValues(template.sources, (() => {
         var _ref = _asyncToGenerator(function* (source) {
           if (_lodash2.default.isEmpty(source.type)) {
             return null;
@@ -143,24 +143,24 @@ class Representation {
 
       const payload = {
         updatedAt: new Date(),
-        sources: Representation.removeTokens(sources)
+        sources: Representy.removeTokens(sources)
       };
 
       const { folder, file, clean, json, home } = _this2.config;
 
       if (clean) {
-        Representation.clean(folder);
+        Representy.clean(folder);
       }
       if (json) {
-        Representation.write(folder, JSON.stringify(payload, null, 4), file);
+        Representy.write(folder, JSON.stringify(payload, null, 4), file);
       }
       const html = yield _this2.render(payload);
       if (!_lodash2.default.isEmpty(html)) {
-        Representation.write(folder, html, home);
+        Representy.write(folder, html, home);
       }
     })();
   }
 
 }
 
-exports.default = Representation;
+exports.default = Representy;

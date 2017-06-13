@@ -1,10 +1,10 @@
 {
-  "name": "representation",
+  "name": "representy",
   "version": "0.0.16",
-  "repository": "git@github.com:salimkayabasi/representation.git",
+  "repository": "git@github.com:representy/representy.git",
   "author": "Salim KAYABAŞI <salim.kayabasi@gmail.com>",
   "license": "MIT",
-  "main": "dist/representation.js",
+  "main": "dist/representy.js",
   "scripts": {
     "major": "npm version major -m \"New major version %s\"",
     "minor": "npm version minor -m \"New minor version %s\"",
@@ -28,7 +28,7 @@
     "eslint-plugin-jsx-a11y": "^5.0.3",
     "eslint-plugin-react": "^7.0.1",
     "jest": "^20.0.4",
-    "representation-source-github": "^0.0.16"
+    "representy-source-github": "^0.0.17"
   },
   "jest": {
     "testMatch": [
@@ -56,7 +56,7 @@
     "lodash": "^4.17.4",
     "log-with": "^1.2.1",
     "mkdirp": "^0.5.1",
-    "representation-tool-renderer": "^0.0.2",
+    "representy-tool-renderer": "^0.0.3",
     "rimraf": "^2.6.1"
   }
 }
