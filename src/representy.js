@@ -7,6 +7,7 @@ import Renderer from 'representy-tool-renderer';
 import rimraf from 'rimraf';
 
 const logger = logWith(module);
+const pkg = require('../package.json');
 
 class Representy {
   constructor(config) {
@@ -41,7 +42,7 @@ class Representy {
 
     const layout = template.layout;
     if (!_.isEmpty(layout)) {
-      const layoutModule = `representation-layout-${layout}`;
+      const layoutModule = `${pkg.name}-layout-${layout}`;
       try {
         const { Template } = await import(layoutModule);
         return Template.render(payload);
@@ -79,7 +80,7 @@ class Representy {
         if (source.type === 'data') {
           return _.get(source, 'data');
         }
-        const sourceModule = `representation-source-${source.type}`;
+        const sourceModule = `${pkg.name}-source-${source.type}`;
         try {
           const { Source } = await import(sourceModule);
           const fetcher = new Source({
