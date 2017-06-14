@@ -1,10 +1,10 @@
 import program from 'commander';
 import fs from 'fs';
-import path from 'path';
 import logWith from 'log-with';
+import path from 'path';
 import ConfigReader from 'representy-tool-config-reader';
-import Representy from './representy';
 import pkg from '../package.json';
+import Representy from './representy';
 
 const logger = logWith(module);
 
@@ -25,13 +25,14 @@ const ls = (folder) => {
   });
 };
 
-logger.debug('Starting to build');
+logger.info('Running');
 const env = process.env;
 const config = ConfigReader.read(program.config, env);
+config.log = program.log;
 const representy = new Representy(config);
 logger.debug('Building');
 representy.build()
   .then(() => {
     ls(config.folder);
-    logger.debug('Done');
+    logger.info('Done');
   });

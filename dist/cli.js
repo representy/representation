@@ -8,25 +8,25 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
 var _logWith = require('log-with');
 
 var _logWith2 = _interopRequireDefault(_logWith);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
 
 var _representyToolConfigReader = require('representy-tool-config-reader');
 
 var _representyToolConfigReader2 = _interopRequireDefault(_representyToolConfigReader);
 
-var _representy = require('./representy');
-
-var _representy2 = _interopRequireDefault(_representy);
-
 var _package = require('../package.json');
 
 var _package2 = _interopRequireDefault(_package);
+
+var _representy = require('./representy');
+
+var _representy2 = _interopRequireDefault(_representy);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -45,12 +45,13 @@ const ls = folder => {
   });
 };
 
-logger.debug('Starting to build');
+logger.info('Running');
 const env = process.env;
 const config = _representyToolConfigReader2.default.read(_commander2.default.config, env);
+config.log = _commander2.default.log;
 const representy = new _representy2.default(config);
 logger.debug('Building');
 representy.build().then(() => {
   ls(config.folder);
-  logger.debug('Done');
+  logger.info('Done');
 });
