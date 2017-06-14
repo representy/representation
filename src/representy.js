@@ -12,6 +12,9 @@ const logger = logWith(module);
 class Representy {
   constructor(config) {
     this.config = _.extend(Representy.getOptions(), config);
+    if (this.config.log) {
+      logger.level = 'debug';
+    }
   }
 
   static getOptions() {
@@ -23,10 +26,12 @@ class Representy {
   }
 
   static clean(folder) {
+    logger.debug('Cleaning folder', folder);
     rimraf.sync(folder);
   }
 
   static removeTokens(sources) {
+    logger.debug('Removing tokens');
     return _.mapValues(sources, source => _.omit(source, 'options.token'));
   }
 
@@ -42,6 +47,7 @@ class Representy {
 
     const layout = template.layout;
     if (!_.isEmpty(layout)) {
+      logger.debug('Will use layout rendering');
       const layoutModule = `${pkg.name}-layout-${layout}`;
       try {
         const { Template } = await import(layoutModule);
@@ -54,8 +60,10 @@ class Representy {
 
     const file = template.file;
     if (!_.isEmpty(file)) {
+      logger.debug('Will use file rendering');
       return Renderer.render(payload, _.pick(template, 'file', 'engine'));
     }
+    logger.error('config.template', "> Couldn't find any good template config");
     return null;
   }
 
@@ -73,10 +81,11 @@ class Representy {
     const { config } = this;
     const { template } = config;
     const sources = await Representy.mapValues(template.sources,
-      async (source) => {
+      async (source, sourceName) => {
         if (_.isEmpty(source.type)) {
           return null;
         }
+        logger.debug('Loading source', sourceName);
         if (source.type === 'data') {
           return _.get(source, 'data');
         }
@@ -102,14 +111,19 @@ class Representy {
     const { folder, file, clean, json, home } = this.config;
 
     if (clean) {
+      logger.debug('config.clean', '> Clean build folder');
       Representy.clean(folder);
     }
     if (json) {
+      logger.debug('config.json', '> Genarate JSON output');
       Representy.write(folder, JSON.stringify(payload, null, 4), file);
     }
+    logger.debug('Rendering page');
     const html = await this.render(payload);
     if (!_.isEmpty(html)) {
       Representy.write(folder, html, home);
+    } else {
+      logger.debug('Rendering failed');
     }
   }
 

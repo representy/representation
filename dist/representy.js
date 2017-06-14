@@ -47,6 +47,9 @@ const logger = (0, _logWith2.default)(module);
 class Representy {
   constructor(config) {
     this.config = _lodash2.default.extend(Representy.getOptions(), config);
+    if (this.config.log) {
+      logger.level = 'debug';
+    }
   }
 
   static getOptions() {
@@ -58,10 +61,12 @@ class Representy {
   }
 
   static clean(folder) {
+    logger.debug('Cleaning folder', folder);
     _rimraf2.default.sync(folder);
   }
 
   static removeTokens(sources) {
+    logger.debug('Removing tokens');
     return _lodash2.default.mapValues(sources, source => _lodash2.default.omit(source, 'options.token'));
   }
 
@@ -80,6 +85,7 @@ class Representy {
 
       const layout = template.layout;
       if (!_lodash2.default.isEmpty(layout)) {
+        logger.debug('Will use layout rendering');
         const layoutModule = `${_package2.default.name}-layout-${layout}`;
         try {
           const { Template } = yield Promise.resolve().then(() => require(`${layoutModule}`));
@@ -92,8 +98,10 @@ class Representy {
 
       const file = template.file;
       if (!_lodash2.default.isEmpty(file)) {
+        logger.debug('Will use file rendering');
         return _representyToolRenderer2.default.render(payload, _lodash2.default.pick(template, 'file', 'engine'));
       }
+      logger.error('config.template', "> Couldn't find any good template config");
       return null;
     })();
   }
@@ -120,10 +128,11 @@ class Representy {
       const { config } = _this2;
       const { template } = config;
       const sources = yield Representy.mapValues(template.sources, (() => {
-        var _ref = _asyncToGenerator(function* (source) {
+        var _ref = _asyncToGenerator(function* (source, sourceName) {
           if (_lodash2.default.isEmpty(source.type)) {
             return null;
           }
+          logger.debug('Loading source', sourceName);
           if (source.type === 'data') {
             return _lodash2.default.get(source, 'data');
           }
@@ -140,7 +149,7 @@ class Representy {
           }
         });
 
-        return function (_x) {
+        return function (_x, _x2) {
           return _ref.apply(this, arguments);
         };
       })());
@@ -153,14 +162,19 @@ class Representy {
       const { folder, file, clean, json, home } = _this2.config;
 
       if (clean) {
+        logger.debug('config.clean', '> Clean build folder');
         Representy.clean(folder);
       }
       if (json) {
+        logger.debug('config.json', '> Genarate JSON output');
         Representy.write(folder, JSON.stringify(payload, null, 4), file);
       }
+      logger.debug('Rendering page');
       const html = yield _this2.render(payload);
       if (!_lodash2.default.isEmpty(html)) {
         Representy.write(folder, html, home);
+      } else {
+        logger.debug('Rendering failed');
       }
     })();
   }
