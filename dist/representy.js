@@ -39,6 +39,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 const logger = (0, _logWith2.default)(module);
+const pkg = require('../package.json');
 
 class Representy {
   constructor(config) {
@@ -76,7 +77,7 @@ class Representy {
 
       const layout = template.layout;
       if (!_lodash2.default.isEmpty(layout)) {
-        const layoutModule = `representation-layout-${layout}`;
+        const layoutModule = `${pkg.name}-layout-${layout}`;
         try {
           const { Template } = yield Promise.resolve().then(() => require(`${layoutModule}`));
           return Template.render(payload);
@@ -123,7 +124,7 @@ class Representy {
           if (source.type === 'data') {
             return _lodash2.default.get(source, 'data');
           }
-          const sourceModule = `representation-source-${source.type}`;
+          const sourceModule = `${pkg.name}-source-${source.type}`;
           try {
             const { Source } = yield Promise.resolve().then(() => require(`${sourceModule}`));
             const fetcher = new Source(_extends({}, source.options, {
