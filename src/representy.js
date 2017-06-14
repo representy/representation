@@ -5,9 +5,9 @@ import mkdirp from 'mkdirp';
 import path from 'path';
 import Renderer from 'representy-tool-renderer';
 import rimraf from 'rimraf';
+import pkg from '../package.json';
 
 const logger = logWith(module);
-const pkg = require('../package.json');
 
 class Representy {
   constructor(config) {
