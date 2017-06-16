@@ -85,9 +85,9 @@ class Representy {
 
       const layout = template.layout;
       if (!_lodash2.default.isEmpty(layout)) {
-        logger.debug('Will use layout rendering');
-        const layoutModule = `${_package2.default.name}-layout-${layout}`;
         try {
+          const layoutModule = `${_package2.default.name}-layout-${layout}`;
+          logger.debug('Will use layout rendering', layoutModule);
           const { Template } = yield Promise.resolve().then(() => require(`${layoutModule}`));
           return Template.render(payload);
         } catch (e) {
@@ -121,6 +121,21 @@ class Representy {
     })();
   }
 
+  static sourceLoader(source, config, sourceModule) {
+    return _asyncToGenerator(function* () {
+      try {
+        const { Source } = yield Promise.resolve().then(() => require(`${sourceModule}`));
+        const fetcher = new Source(_extends({}, source.options, {
+          token: _lodash2.default.get(source, 'options.token') || _lodash2.default.get(config.tokens, source.type)
+        }));
+        return fetcher.load();
+      } catch (e) {
+        logger.error(e.message, e.code);
+        return null;
+      }
+    })();
+  }
+
   build() {
     var _this2 = this;
 
@@ -137,16 +152,7 @@ class Representy {
             return _lodash2.default.get(source, 'data');
           }
           const sourceModule = `${_package2.default.name}-source-${source.type}`;
-          try {
-            const { Source } = yield Promise.resolve().then(() => require(`${sourceModule}`));
-            const fetcher = new Source(_extends({}, source.options, {
-              token: source.options.token || _lodash2.default.get(config.token, source.type)
-            }));
-            return fetcher.load();
-          } catch (e) {
-            logger.error(e.message, e.code);
-            return null;
-          }
+          return Representy.sourceLoader(source, config, sourceModule);
         });
 
         return function (_x, _x2) {
