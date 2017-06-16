@@ -60,9 +60,9 @@ describe('Representy', () => {
             },
           },
           github2: {
-            type: 'github',
+            type: 'representy-source/html',
             options: {
-              user: 'google',
+              raw: 'google',
             },
           },
           linkedin: {
