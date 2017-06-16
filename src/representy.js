@@ -47,9 +47,9 @@ class Representy {
 
     const layout = template.layout;
     if (!_.isEmpty(layout)) {
-      logger.debug('Will use layout rendering');
-      const layoutModule = `${pkg.name}-layout-${layout}`;
       try {
+        const layoutModule = `${pkg.name}-layout-${layout}`;
+        logger.debug('Will use layout rendering', layoutModule);
         const { Template } = await import(layoutModule);
         return Template.render(payload);
       } catch (e) {
@@ -77,6 +77,20 @@ class Representy {
     return _.merge(props, values);
   }
 
+  static async sourceLoader(source, config, sourceModule) {
+    try {
+      const { Source } = await import(sourceModule);
+      const fetcher = new Source({
+        ...source.options,
+        token: _.get(source, 'options.token') || _.get(config.tokens, source.type),
+      });
+      return fetcher.load();
+    } catch (e) {
+      logger.error(e.message, e.code);
+      return null;
+    }
+  }
+
   async build() {
     const { config } = this;
     const { template } = config;
@@ -90,17 +104,7 @@ class Representy {
           return _.get(source, 'data');
         }
         const sourceModule = `${pkg.name}-source-${source.type}`;
-        try {
-          const { Source } = await import(sourceModule);
-          const fetcher = new Source({
-            ...source.options,
-            token: source.options.token || _.get(config.token, source.type),
-          });
-          return fetcher.load();
-        } catch (e) {
-          logger.error(e.message, e.code);
-          return null;
-        }
+        return Representy.sourceLoader(source, config, sourceModule);
       });
 
     const payload = {
