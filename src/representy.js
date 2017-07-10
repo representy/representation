@@ -130,7 +130,6 @@ class Representy {
       logger.debug('Rendering failed');
     }
   }
-
 }
 
 export default Representy;

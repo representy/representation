@@ -1,6 +1,6 @@
-extends: "airbnb"
+extends: airbnb
 
-parser: "babel-eslint"
+parser: babel-eslint
 
 env:
   browser: true
@@ -10,9 +10,9 @@ env:
 
 parserOptions:
  ecmaVersion: 6
- sourceType: "module"
+ sourceType: module
  ecmaFeatures:
-   classes: true,
+   classes: true
    jsx: true
 
 plugins:
@@ -22,3 +22,4 @@ plugins:
 
 rules:
   no-console: error
+  jsx-a11y/href-no-hash: off

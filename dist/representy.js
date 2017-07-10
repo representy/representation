@@ -184,7 +184,6 @@ class Representy {
       }
     })();
   }
-
 }
 
 exports.default = Representy;
