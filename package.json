@@ -16,21 +16,26 @@
     "lint:fix": "eslint . --fix",
     "pretest": "yarn run lint",
     "test": "jest",
+    "clean": "rm -rf dist/",
     "build": "babel src/ -d dist/",
-    "preversion": "yarn build && git commit -a --allow-empty -m 'update dist'"
+    "preversion": "yarn build && git commit -a --allow-empty -m 'update dist'",
+    "prebuild": "yarn run lint && yarn run clean && yarn run nsp",
+    "prepublish": "yarn run build",
+    "nsp": "nsp check"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-plugin-dynamic-import-node": "^1.0.2",
-    "babel-preset-env": "^1.5.2",
+    "babel-preset-env": "^1.6.0",
     "babel-preset-stage-2": "^6.24.1",
-    "eslint": "^3.19.0",
-    "eslint-config-airbnb": "^15.0.1",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-jsx-a11y": "^5.0.3",
+    "eslint": "^4.2.0",
+    "eslint-config-airbnb": "^15.0.2",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.1.0",
     "jest": "^20.0.4",
+    "nsp": "^2.6.3",
     "representy-source-github": "^0.0.20"
   },
   "jest": {
@@ -43,6 +48,7 @@
       "!**/node_modules/**",
       "!**/coverage/**",
       "!**/build/**",
+      "!**/dist/**",
       "!**/config/**",
       "!**/test/**"
     ],
@@ -56,12 +62,12 @@
     }
   },
   "dependencies": {
-    "commander": "^2.9.0",
+    "commander": "^2.11.0",
     "lodash": "^4.17.4",
     "log-with": "^1.2.1",
     "mkdirp": "^0.5.1",
     "representy-tool-config-reader": "^0.0.6",
-    "representy-tool-renderer": "^0.0.3",
+    "representy-tool-renderer": "^0.0.5",
     "rimraf": "^2.6.1"
   }
 }
