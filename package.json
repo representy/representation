@@ -1,6 +1,6 @@
 {
   "name": "representy",
-  "version": "0.0.24",
+  "version": "0.0.27",
   "repository": "git@github.com:representy/representy.git",
   "author": "Salim KAYABAŞI <salim.kayabasi@gmail.com>",
   "license": "MIT",
@@ -16,9 +16,9 @@
     "lint:fix": "eslint . --fix",
     "pretest": "yarn run lint",
     "test": "jest",
-    "clean": "rm -rf dist/",
-    "build": "babel src/ -d dist/",
+    "clean": "rm -rf dist/ build/ coverage/",
     "prebuild": "yarn run lint && yarn run clean && yarn run nsp",
+    "build": "babel src/ -d dist/",
     "prepublish": "yarn run build",
     "nsp": "nsp check"
   },
@@ -48,6 +48,7 @@
       "!**/coverage/**",
       "!**/build/**",
       "!**/dist/**",
+      "!**/bin/**",
       "!**/config/**",
       "!**/test/**"
     ],
