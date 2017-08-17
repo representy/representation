@@ -15,7 +15,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "pretest": "yarn run lint",
-    "test": "jest",
+    "test": "jest --colors",
     "clean": "rm -rf dist/ build/ coverage/",
     "prebuild": "yarn run lint && yarn run clean && yarn run nsp",
     "build": "babel src/ -d dist/",
