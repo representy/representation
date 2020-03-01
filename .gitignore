@@ -3,7 +3,8 @@ config/runtime.*
 config/*.json
 jest/
 build/
-dist/
+!dist/
+config.yml
 
 ### Windows template
 # Windows thumbnail cache files

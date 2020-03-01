@@ -1,0 +1,18 @@
+name: Representy 🚀
+description: GitHub Actions for Representy ⚡️
+author: 'salimkayabasi'
+inputs:
+  debug:
+    description: Enable verbose logs
+    required: true
+    default: 'false'
+  config:
+    description: Path of configuration
+    required: true
+    default: config.yml
+runs:
+  using: node12
+  main: dist/index.js
+branding:
+  icon: package
+  color: yellow
